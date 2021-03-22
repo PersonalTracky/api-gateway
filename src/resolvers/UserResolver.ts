@@ -8,6 +8,7 @@ import {
   Ctx,
   Mutation,
   InputType,
+  Query,
 } from "type-graphql";
 import { getConnection } from "typeorm";
 import { FieldError } from "./FieldError";
@@ -38,6 +39,14 @@ export class UsernamePasswordInput {
 
 @Resolver(User)
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  me(@Ctx() { req }: MyContext) {
+    if (!req.session.userId) {
+      return null;
+    }
+    return User.findOne(req.session.userId);
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: UsernamePasswordInput,
@@ -77,7 +86,6 @@ export class UserResolver {
     }
     // when user is registered, store the user is in the session and set
     // their cookie
-    console.log(req.session);
     req.session.userId = user.id;
     return { user };
   }
