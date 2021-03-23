@@ -55,6 +55,7 @@ const main = async () => {
         httpOnly: true,
         sameSite: "lax",
         secure: __prod__,
+        domain: __prod__? process.env.PROD_DOMAIN : undefined
       },
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET,
