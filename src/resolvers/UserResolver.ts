@@ -93,7 +93,7 @@ export class UserResolver {
   async changePassword(
     @Arg("token") token: string,
     @Arg("newPassword") newPassword: string,
-    @Ctx() { redis, req }: MyContext
+    @Ctx() { redis }: MyContext
   ): Promise<UserResponse> {
     if (newPassword.length <= 2) {
       return {

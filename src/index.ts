@@ -20,8 +20,8 @@ const main = async () => {
   await createConnection({
     type: "postgres",
     url: process.env.DB_URL,
-    logging: true,
-    synchronize: true,
+    logging: !__prod__,
+    synchronize: __prod__,
     migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Category, Log, User],
     cli: { migrationsDir: "migrations" },
