@@ -29,7 +29,7 @@ const main = async () => {
   const app = express();
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
-  app.set("trust proxy", 1);
+  app.set("trust proxy", true);
   console.log("allowing CORS origin:", process.env.CORS_ORIGIN);
   app.use(
     cors({
@@ -46,6 +46,7 @@ const main = async () => {
   app.use(
     session({
       name: COOKIE_NAME,
+      proxy: __prod__,
       store: new RedisStore({
         client: redis,
         disableTouch: true,
@@ -55,7 +56,6 @@ const main = async () => {
         httpOnly: true,
         sameSite: "lax",
         secure: __prod__,
-        domain: __prod__? process.env.PROD_DOMAIN : undefined
       },
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET,
@@ -73,6 +73,7 @@ const main = async () => {
       redis,
     }),
   });
+  app.enable("trust proxy");
   apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(parseInt(process.env.PORT), () => {
