@@ -1,5 +1,4 @@
 import "reflect-metadata";
-import "dotenv-safe/config";
 import { __prod__, COOKIE_NAME } from "./constants/constants";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
