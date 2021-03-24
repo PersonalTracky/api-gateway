@@ -16,11 +16,12 @@ import { User } from "./entities/User";
 import { UserResolver } from "./resolvers/UserResolver";
 
 const main = async () => {
+  require("dotenv").config();
   await createConnection({
     type: "postgres",
     url: process.env.DB_URL,
     logging: !__prod__,
-    synchronize: __prod__,
+    synchronize: !__prod__,
     migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Category, Log, User],
     cli: { migrationsDir: "migrations" },
@@ -76,7 +77,7 @@ const main = async () => {
   app.enable("trust proxy");
   apolloServer.applyMiddleware({ app, cors: false });
 
-  app.listen(parseInt(process.env.PORT), () => {
+  app.listen(parseInt(process.env.PORT!), () => {
     console.log(`Server started on port ${process.env.PORT}`);
   });
 };
