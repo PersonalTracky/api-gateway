@@ -15,7 +15,7 @@ import {
 import { getConnection } from "typeorm";
 import { FieldError } from "./FieldError";
 import argon2 from "argon2";
-import { COOKIE_NAME } from "../constants/constants";
+import { COOKIE_NAME, __prod__ } from "../constants/constants";
 import { User } from "../entities/User";
 import { v4 } from "uuid";
 import { sendEmail } from "../email/sendEmail";
@@ -77,13 +77,12 @@ export class UserResolver {
       1000 * 60 * 60 * 24 * 1
     );
 
-    // TODO: change url to non hardcoded dev url when deploying to prod
     await sendEmail({
       from: process.env.EMAIL,
       to: email,
       subject: "Tracky password reset",
       text: `Hello, ${username}, here is your password reset link: ${token}`,
-      html: `<b>Hello, <strong>${username}</strong>, here is your password reset link:\n<b><a href="http://localhost:3000/change-password/${token}">http://localhost:3000/change-password/${token}</a></b>`,
+      html: `<b>Hello, <strong>${username}</strong>, here is your password reset link:\n<b><a href="${process.env.CORS_ORIGIN}/change-password/${token}">${process.env.CORS_ORIGIN}/change-password/${token}</a></b>`,
     });
 
     return true;

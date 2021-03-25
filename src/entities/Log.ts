@@ -38,7 +38,9 @@ export class Log extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Category, (category) => category.logs)
+  @ManyToOne(() => Category, (category) => category.logs, {
+    onDelete:"CASCADE"
+  })
   category: Category;
 
   @ManyToOne(() => User, (user) => user.logs)

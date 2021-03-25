@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { Category } from "./Category";
 import { Log } from "./Log";
+import { Note } from "./Note";
 
 @ObjectType()
 @Entity()
@@ -46,4 +47,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Category, (category) => category.creator)
   categories: Category[];
+
+  @OneToMany(() => Note, (note) => note.creator)
+  notes: Note[];
 }

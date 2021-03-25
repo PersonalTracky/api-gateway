@@ -14,6 +14,8 @@ import { Category } from "./entities/Category";
 import { Log } from "./entities/Log";
 import { User } from "./entities/User";
 import { UserResolver } from "./resolvers/UserResolver";
+import { Note } from "./entities/Note";
+import { NoteResolver } from "./resolvers/NoteResolver";
 
 const main = async () => {
   require("dotenv").config();
@@ -23,7 +25,7 @@ const main = async () => {
     logging: !__prod__,
     synchronize: !__prod__,
     migrations: [path.join(__dirname, "./migrations/*")],
-    entities: [Category, Log, User],
+    entities: [Category, Log, User, Note],
     cli: { migrationsDir: "migrations" },
   });
 
@@ -65,7 +67,7 @@ const main = async () => {
   );
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [PingResolver, UserResolver],
+      resolvers: [PingResolver, UserResolver, NoteResolver],
       validate: false,
     }),
     context: ({ req, res }) => ({

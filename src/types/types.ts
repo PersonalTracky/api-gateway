@@ -13,7 +13,7 @@ export type MyContext = {
 declare global {
   namespace Express {
     interface SessionData {
-      cookie: any
+      cookie: any;
     }
   }
 }
