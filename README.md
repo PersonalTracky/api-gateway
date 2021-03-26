@@ -1,10 +1,10 @@
 # Tracky - api gateway
 
-<Flex>
+<p float="left">
 <img alt="GraphQL" src="https://img.shields.io/badge/-GraphQL-E10098?style=for-the-badge&logo=graphql"/>
 <img alt="NodeJS" src="https://img.shields.io/badge/node.js%20-%2343853D.svg?&style=for-the-badge&logo=node.js&logoColor=white"/>
 <img alt="TypeScript" src="https://img.shields.io/badge/typescript%20-%23007ACC.svg?&style=for-the-badge&logo=typescript&logoColor=white"/>
-</Flex>
+</p>
 
 This repository contains the API gateway for [Tracky](https://github.com/PersonalTracky/web).
 
