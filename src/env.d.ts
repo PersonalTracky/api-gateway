@@ -11,5 +11,6 @@ declare namespace NodeJS {
     CLIENT_ID: string;
     REDIS_FORGET_PASSWORD_PREFIX: string;
     PROD_DOMAIN: string;
+    NOTES_SERVICE_ENDPOINT: string;
   }
 }
