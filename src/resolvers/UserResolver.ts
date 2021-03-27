@@ -1,24 +1,24 @@
-import { MyContext } from "../types/types";
-import { validateRegister } from "../validation/RegisterValidation";
+import argon2 from "argon2";
+import axios from "axios";
 import {
-  ObjectType,
-  Field,
-  Resolver,
   Arg,
   Ctx,
-  Mutation,
-  InputType,
-  Query,
+  Field,
   FieldResolver,
+  InputType,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
   Root,
 } from "type-graphql";
-import { getConnection } from "typeorm";
-import { FieldError } from "./FieldError";
-import argon2 from "argon2";
-import { COOKIE_NAME, __prod__ } from "../constants/constants";
-import { User } from "../entities/User";
 import { v4 } from "uuid";
+import { COOKIE_NAME } from "../constants/constants";
 import { sendEmail } from "../email/sendEmail";
+import { User } from "../entities/User";
+import { MyContext } from "../types/types";
+import { validateRegister } from "../validation/RegisterValidation";
+import { FieldError } from "./FieldError";
 
 @ObjectType()
 class UserResponse {
@@ -56,8 +56,20 @@ export class UserResolver {
     @Arg("email") email: string,
     @Ctx() { redis }: MyContext
   ) {
-    console.log(email);
-    const user = await User.findOne({ where: { email } });
+    const res = await axios.post(`${process.env.USER_SERVICE_ENDPOINT_UBEU}`, {
+      usernameOrEmail: email,
+    });
+    if (res.data.error) {
+      return {
+        errors: [
+          {
+            field: "usernameOrEmail",
+            message: "Username does not exist",
+          },
+        ],
+      };
+    }
+    const user = res.data.user;
     if (!user) {
       // the email is not in the db so we can just return true without sending
       // if we return false and display that the email is not in the db then
@@ -65,10 +77,8 @@ export class UserResolver {
       // so we can just return true
       return true;
     }
-
     const token = v4();
     const username = user.username;
-
     // give the user a day to reset their password, then the link becomes expired
     await redis.set(
       process.env.REDIS_FORGET_PASSWORD_PREFIX + token,
@@ -104,7 +114,6 @@ export class UserResolver {
         ],
       };
     }
-
     const key = process.env.REDIS_FORGET_PASSWORD_PREFIX + token;
     const userId = await redis.get(key);
     if (!userId) {
@@ -117,10 +126,20 @@ export class UserResolver {
         ],
       };
     }
-
-    const userIdNum = parseInt(userId);
-    const user = await User.findOne(userIdNum);
-
+    const res = await axios.post(`${process.env.USER_SERVICE_ENDPOINT_UBID}`, {
+      id: userId,
+    });
+    if (res.data.error) {
+      return {
+        errors: [
+          {
+            field: "token",
+            message: "User no longer exists",
+          },
+        ],
+      };
+    }
+    let user = res.data.user;
     if (!user) {
       return {
         errors: [
@@ -131,24 +150,24 @@ export class UserResolver {
         ],
       };
     }
-
-    await User.update(
-      { id: userIdNum },
-      {
-        password: await argon2.hash(newPassword),
-      }
-    );
-
+    const resPut = await axios.put(`${process.env.USER_SERVICE_ENDPOINT}`, {
+      id: userId,
+      password: await argon2.hash(newPassword),
+    });
+    user = resPut.data.user;
     await redis.del(key);
     return { user };
   }
 
   @Query(() => User, { nullable: true })
-  me(@Ctx() { req }: MyContext) {
+  async me(@Ctx() { req }: MyContext) {
     if (!req.session.userId) {
       return null;
     }
-    return User.findOne(req.session.userId);
+    const res = await axios.post(`${process.env.USER_SERVICE_ENDPOINT_ME}`, {
+      id: req.session.userId,
+    });
+    return res.data.user;
   }
 
   @Mutation(() => UserResponse)
@@ -161,23 +180,15 @@ export class UserResolver {
       return { errors };
     }
     const hashedPassword = await argon2.hash(options.password);
-    let user;
-    try {
-      const result = await getConnection()
-        .createQueryBuilder()
-        .insert()
-        .into(User)
-        .values({
-          username: options.username,
-          email: options.email,
-          password: hashedPassword,
-          profilePictureUrl: options.profilePictureUrl,
-        })
-        .returning("*")
-        .execute();
-      user = result.raw[0];
-    } catch (err) {
-      if (err.code === "23505") {
+    const res = await axios.post(`${process.env.USER_SERVICE_ENDPOINT}`, {
+      username: options.username,
+      email: options.email,
+      password: hashedPassword,
+      profilePictureUrl: options.profilePictureUrl,
+    });
+
+    if (res.data.error) {
+      if (res.data.error === "23505") {
         return {
           errors: [
             {
@@ -188,6 +199,7 @@ export class UserResolver {
         };
       }
     }
+    const user = res.data.user;
     // when user is registered, store the user is in the session and set
     // their cookie
     req.session.userId = user.id;
@@ -200,11 +212,21 @@ export class UserResolver {
     @Arg("password") password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await User.findOne(
-      usernameOrEmail.includes("@")
-        ? { where: { email: usernameOrEmail } }
-        : { where: { username: usernameOrEmail } }
-    );
+    const res = await axios.post(`${process.env.USER_SERVICE_ENDPOINT_UBEU}`, {
+      usernameOrEmail: usernameOrEmail,
+    });
+
+    if (res.data.error) {
+      return {
+        errors: [
+          {
+            field: "usernameOrEmail",
+            message: "Username does not exist",
+          },
+        ],
+      };
+    }
+    const user = res.data.user;
     if (!user) {
       return {
         errors: [
