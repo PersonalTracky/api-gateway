@@ -1,33 +1,18 @@
-import "reflect-metadata";
-import { __prod__, COOKIE_NAME } from "./constants/constants";
-import express from "express";
 import { ApolloServer } from "apollo-server-express";
-import { buildSchema } from "type-graphql";
-import Redis from "ioredis";
-import session from "express-session";
 import connectRedis from "connect-redis";
 import cors from "cors";
-import { createConnection } from "typeorm";
-import path from "path";
-import { PingResolver } from "./resolvers/PingResolver";
-import { Category } from "./entities/Category";
-import { Log } from "./entities/Log";
-import { User } from "./entities/User";
-import { UserResolver } from "./resolvers/UserResolver";
-import { Note } from "./entities/Note";
+import express from "express";
+import session from "express-session";
+import Redis from "ioredis";
+import "reflect-metadata";
+import { buildSchema } from "type-graphql";
+import { COOKIE_NAME, __prod__ } from "./constants/constants";
 import { NoteResolver } from "./resolvers/NoteResolver";
+import { PingResolver } from "./resolvers/PingResolver";
+import { UserResolver } from "./resolvers/UserResolver";
 
 const main = async () => {
   require("dotenv").config();
-  await createConnection({
-    type: "postgres",
-    url: process.env.DB_URL,
-    logging: !__prod__,
-    synchronize: !__prod__,
-    migrations: [path.join(__dirname, "./migrations/*")],
-    entities: [Category, Log, User, Note],
-    cli: { migrationsDir: "migrations" },
-  });
 
   const app = express();
   const RedisStore = connectRedis(session);

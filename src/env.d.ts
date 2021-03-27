@@ -1,6 +1,5 @@
 declare namespace NodeJS {
   interface ProcessEnv {
-    DB_URL: string;
     PORT: string;
     REDIS_URL: string;
     CORS_ORIGIN: string;
@@ -12,5 +11,10 @@ declare namespace NodeJS {
     REDIS_FORGET_PASSWORD_PREFIX: string;
     PROD_DOMAIN: string;
     NOTES_SERVICE_ENDPOINT: string;
+    NOTES_SERVICE_ENDPOINT_PAG: string;
+    USER_SERVICE_ENDPOINT: string;
+    USER_SERVICE_ENDPOINT_ME: string;
+    USER_SERVICE_ENDPOINT_UBID: string;
+    USER_SERVICE_ENDPOINT_UBEU: string;
   }
 }
