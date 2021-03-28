@@ -187,6 +187,7 @@ export class UserResolver {
       profilePictureUrl: options.profilePictureUrl,
     });
 
+    console.log("Got response for register from user service", res.data);
     if (res.data.error) {
       if (res.data.error === "23505") {
         return {
