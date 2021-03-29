@@ -9,7 +9,7 @@ import {
   ObjectType,
   Query,
   Resolver,
-  UseMiddleware
+  UseMiddleware,
 } from "type-graphql";
 import { Note } from "../entities/Note";
 import { MyContext } from "../types/types";
@@ -25,24 +25,18 @@ class NoteInput {
 class PaginatedNotes {
   @Field(() => [Note])
   notes: Note[];
-  @Field()
-  hasMore: boolean;
 }
 
 @Resolver(Note)
 export class NoteResolver {
   @Query(() => PaginatedNotes)
-  async notes(
-    @Arg("limit", () => Int) limit: number,
-    @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
-    @Ctx() { req }: MyContext
-  ): Promise<PaginatedNotes> {
+  async notes(@Ctx() { req }: MyContext): Promise<PaginatedNotes> {
     const res = await axios.post(`${process.env.NOTES_SERVICE_ENDPOINT_PAG}`, {
-      limit: limit,
       creatorId: req.session.userId,
-      cursor: cursor,
     });
-    return res.data;
+    return {
+      notes: res.data.notes,
+    };
   }
 
   @Mutation(() => Note)
@@ -66,7 +60,7 @@ export class NoteResolver {
   ): Promise<Note | null> {
     const res = await axios.put(`${process.env.NOTES_SERVICE_ENDPOINT}`, {
       text: text,
-      id:id,
+      id: id,
     });
     return res.data.note;
   }
@@ -75,8 +69,8 @@ export class NoteResolver {
   async deleteNote(@Arg("id") id: number): Promise<boolean> {
     const res = await axios.delete(`${process.env.NOTES_SERVICE_ENDPOINT}`, {
       data: {
-        id: id
-      }
+        id: id,
+      },
     });
     return res.data;
   }
