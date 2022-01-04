@@ -254,9 +254,9 @@
   integrity sha512-2aoSC4UUbHDj2uCsCxcG/vRMXey/m17bC7UwitVm5hn22nI8O8Y9iDpA76Orc+DWkQ4zZrOKEshCqR/jSuXAHA==
 
 "@types/ioredis@*", "@types/ioredis@^4.17.3":
-  version "4.26.0"
-  resolved "https://registry.yarnpkg.com/@types/ioredis/-/ioredis-4.26.0.tgz#7d171d013f52de9475d5bdbe9d8005dd0898be3e"
-  integrity sha512-lxF+O7a5lu08g8rmPTAlD105SorTbu1A3jZdH8CIra0eh3lmpqkRkJ3FAYFPTAXSlnE549xqbQIo1BLzx5smNg==
+  version "4.28.7"
+  resolved "https://registry.yarnpkg.com/@types/ioredis/-/ioredis-4.28.7.tgz#ee79987ef80597ba8c17cfbf9345859ff9233c2d"
+  integrity sha512-jnSGCD2/TPk02j6v6CGqaCEl0LbmLgK6jUuk/AFaSNUBV+SCHiG7E7fnwJreN6hw9GqtLAFkJs4zFbkJrz11mQ==
   dependencies:
     "@types/node" "*"
 
