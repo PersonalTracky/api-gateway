@@ -50,7 +50,7 @@
     "dotenv-safe": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "1.17.1",
-    "googleapis": "^72.0.0",
+    "googleapis": "^110.0.0",
     "graphql": "^15.3.0",
     "ioredis": "4.27.1",
     "nodemailer": "^6.4.11",
